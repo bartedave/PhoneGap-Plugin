@@ -15,7 +15,9 @@ BXL SDK for Android_UPOS Compliant Plugin
     <author>
 BIXOLON
     </author>
-
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>  
     <keywords>
 BIXOLON,BXL
     </keywords>
