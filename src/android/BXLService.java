@@ -1,16 +1,17 @@
 package com.bxl.service.phonegap;
 
-import jpos.JposException;
-import jpos.POSPrinter;
-
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import com.bxl.config.editor.BXLConfigLoader;
+
 import android.content.Context;
 import android.util.Log;
+import jpos.JposException;
+import jpos.POSPrinter;
 
 public class BXLService extends CordovaPlugin {
 
@@ -67,10 +68,16 @@ public class BXLService extends CordovaPlugin {
 	private final String METHOD_PRINT_BITMAP = "printBitmap";
 	private final String METHOD_PRINT_NORMAL = "printNormal";
 	private final String METHOD_TRANSACTION_PRINT = "transactionPrint";
+	
+	private final String ADD_PRINTER = "addPrinter";
+	private final String REMOVE_PRINTER = "removePrinter";
+	private final String REMOVE_ALL_PRINTER = "removeAllPrinter";
 
 	private static POSPrinter posPrinter;
+	private static Context context;
 
 	public static void setContext(Context context) {
+		BXLService.context = context;
 		posPrinter = new POSPrinter(context);
 	}
 
@@ -98,7 +105,7 @@ public class BXLService extends CordovaPlugin {
 			Log.d(TAG, "execute(" + action + ", " + args + ", "
 					+ callbackContext + ")");
 		}
-
+		
 		if (!action.equals(ACTION_EXECUTE_PRINTER)) {
 			callbackContext.error("Action is not matched");
 			return false;
@@ -265,6 +272,30 @@ public class BXLService extends CordovaPlugin {
 			} else if (method.equals(METHOD_TRANSACTION_PRINT)) {
 				posPrinter.transactionPrint(args.getInt(1), args.getInt(2));
 				callbackContext.success();
+			} else if (method.equals(ADD_PRINTER)) {
+				try {
+					addPrinter(context, args.getString(1), args.getString(2), args.getInt(3), args.getString(4));
+					callbackContext.success();
+				} catch (Exception e) {
+					callbackContext.error(e.getMessage());
+					return false;
+				}
+			} else if (method.equals(REMOVE_PRINTER)) {
+				try {
+					removePrinter(context, args.getString(1));
+					callbackContext.success();
+				} catch (Exception e) {
+					callbackContext.error(e.getMessage());
+					return false;
+				}
+			} else if (method.equals(REMOVE_ALL_PRINTER)) {
+				try {
+					removeAllPrinter(context);
+					callbackContext.success();
+				} catch (Exception e) {
+					callbackContext.error(e.getMessage());
+					return false;
+				}
 			} else {
 				callbackContext.error("");
 				return false;
@@ -279,6 +310,42 @@ public class BXLService extends CordovaPlugin {
 			e.printStackTrace();
 			callbackContext.error(e.getMessage());
 			return false;
+		}
+	}
+	
+	private void removePrinter(Context context, String logicalName) throws Exception {
+		BXLConfigLoader bxlConfigLoader = new BXLConfigLoader(context);
+		bxlConfigLoader.openFile();
+		
+		bxlConfigLoader.removeEntry(logicalName);
+		
+		bxlConfigLoader.saveFile();
+	}
+	
+	private void removeAllPrinter(Context context) throws Exception {
+		BXLConfigLoader bxlConfigLoader = new BXLConfigLoader(context);
+		bxlConfigLoader.openFile();
+		
+		bxlConfigLoader.removeAllEntries();
+		
+		bxlConfigLoader.saveFile();
+	}
+	
+	private void addPrinter(Context context, String logicalName, String productName, int deviceBus, String address)
+			throws Exception {
+		BXLConfigLoader bxlConfigLoader = new BXLConfigLoader(context);
+		try {
+			bxlConfigLoader.openFile();
+		} catch (Exception e) {
+			bxlConfigLoader.newFile();
+		}
+		
+		bxlConfigLoader.addEntry(logicalName, BXLConfigLoader.DEVICE_CATEGORY_POS_PRINTER,
+				productName, deviceBus, address);
+		try {
+			bxlConfigLoader.saveFile();
+		} catch (Exception e) {
+			throw e;
 		}
 	}
 }
