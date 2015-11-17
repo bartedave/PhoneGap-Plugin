@@ -56,11 +56,11 @@ Apache 2.0 License
             <uses-feature android:name="android.hardware.wifi" android:required="false" />
         </config-file>
 
-        <source-file src="src/android/libs/bixolon_printer.jar" target-dir="libs" framework="true"/>
+        <source-file src="libs/bixolon_printer.jar" target-dir="libs" framework="true"/>
 
-        <source-file src="src/android/libs/jpos114-controls.jar" target-dir="libs" framework="true"/>
+        <source-file src="libs/jpos114-controls.jar" target-dir="libs" framework="true"/>
 
-        <source-file src="src/android/libs/xerces.jar" target-dir="libs" framework="true"/>
+        <source-file src="libs/xerces.jar" target-dir="libs" framework="true"/>
     </platform>
 
 </plugin>
