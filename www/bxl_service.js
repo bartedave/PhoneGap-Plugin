@@ -1,4 +1,4 @@
-
+cordova.define("com.bxl.service.phonegap.bxl_service", function(require, exports, module) {
 		var BXLService = function() {
 		};
 
@@ -16,8 +16,7 @@
 
 		BXLService.prototype.setDeviceEnabled = function(successCallback,
 				errorCallback, deviceEnabled) {
-			cordova
-					.exec(successCallback, errorCallback, "BXLService",
+			cordova.exec(successCallback, errorCallback, "BXLService",
 							"executePrinter", [ "setDeviceEnabled",
 									deviceEnabled ]);
 		};
@@ -258,4 +257,24 @@
 							control ]);
 		};
 		
+		BXLService.prototype.addPrinter = function(successCallback,
+				errorCallback, logicalName, productName, deviceBus, address) {
+			cordova.exec(successCallback, errorCallback, "BXLService",
+					"executePrinter", [ "addPrinter", logicalName,
+					        productName, deviceBus, address ]);
+		};
+		
+		BXLService.prototype.removePrinter = function(successCallback,
+				errorCallback, logialName) {
+			cordova.exec(successCallback, errorCallback, "BXLService",
+					"executePrinter", [ "removePrinter", logicalName ]);
+		};
+		
+		BXLService.prototype.removeAllPrinter = function(successCallback,
+				errorCallback) {
+			cordova.exec(successCallback, errorCallback, "BXLService",
+					"executePrinter", [ "removeAllPrinter" ]);
+		};
+		
 		module.exports = new BXLService();
+});
